@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.edu.seig.vibemusic.mapper.CommentMapper">
+  <!-- 基础字段映射（带头像/昵称） -->
+  <resultMap id="base_result_map" type="cn.edu.seig.vibemusic.model.vo.CommentVO">
+    <id column="commentId" property="commentId"/>
+    <result column="userId" property="userId"/>
+    <result column="username" property="username"/>
+    <result column="userAvatar" property="userAvatar"/>
+    <result column="content" property="content"/>
+    <result column="createTime" property="createTime"/>
+    <result column="likeCount" property="likeCount"/>
+    <result column="imgPath" property="imgPath"/>
+    <result column="pCommentId" property="pCommentId"/>
+    <result column="replyUserId" property="replyUserId"/>
+    <result column="replyNickName" property="replyNickName"/>
+  </resultMap>
+
+  <!-- 带子级集合的结果映射：根据一级 commentId 取二级 -->
+  <resultMap id="result_with_children" type="cn.edu.seig.vibemusic.model.vo.CommentVO" extends="base_result_map">
+    <collection property="children" column="commentId" ofType="cn.edu.seig.vibemusic.model.vo.CommentVO" select="cn.edu.seig.vibemusic.mapper.CommentMapper.selectChildComments"/>
+  </resultMap>
+
+  <!-- 子级查询：按父级ID取所有二级，时间正序 -->
+  <select id="selectChildComments" resultMap="base_result_map">
+    SELECT c.id AS commentId,
+           u.id AS userId,
+           u.username AS username,
+           u.user_avatar AS userAvatar,
+           c.content AS content,
+           c.create_time AS createTime,
+           c.like_count AS likeCount,
+           c.img_path AS imgPath,
+           c.p_comment_id AS pCommentId,
+           c.reply_user_id AS replyUserId,
+           u2.username AS replyNickName
+    FROM tb_comment c
+    LEFT JOIN tb_user u ON c.user_id = u.id
+    LEFT JOIN tb_user u2 ON u2.id = c.reply_user_id
+    WHERE c.p_comment_id = #{commentId}
+    ORDER BY c.id ASC
+  </select>
+
+  <!-- 一级：按专辑获取（仅一级，children 递归加载） -->
+  <select id="getAlbumCommentsWithChildren" resultMap="result_with_children">
+    SELECT c.id AS commentId,
+           u.id AS userId,
+           u.username AS username,
+           u.user_avatar AS userAvatar,
+           c.content AS content,
+           c.create_time AS createTime,
+           c.like_count AS likeCount,
+           c.img_path AS imgPath,
+           c.p_comment_id AS pCommentId,
+           c.reply_user_id AS replyUserId,
+           NULL AS replyNickName
+    FROM tb_comment c
+    LEFT JOIN tb_user u ON c.user_id = u.id
+    WHERE c.album_id = #{albumId} AND c.type = 2 AND c.p_comment_id = 0
+    ORDER BY c.top_type DESC, c.id DESC
+  </select>
+
+  <!-- 一级：按歌曲获取（仅一级，children 递归加载） -->
+  <select id="getSongCommentsWithChildren" resultMap="result_with_children">
+    SELECT c.id AS commentId,
+           u.id AS userId,
+           u.username AS username,
+           u.user_avatar AS userAvatar,
+           c.content AS content,
+           c.create_time AS createTime,
+           c.like_count AS likeCount,
+           c.img_path AS imgPath,
+           c.p_comment_id AS pCommentId,
+           c.reply_user_id AS replyUserId,
+           NULL AS replyNickName
+    FROM tb_comment c
+    LEFT JOIN tb_user u ON c.user_id = u.id
+    WHERE c.song_id = #{songId} AND c.type = 0 AND c.p_comment_id = 0
+    ORDER BY c.top_type DESC, c.id DESC
+  </select>
+
+  <!-- 一级：按歌单获取（仅一级，children 递归加载） -->
+  <select id="getPlaylistCommentsWithChildren" resultMap="result_with_children">
+    SELECT c.id AS commentId,
+           u.id AS userId,
+           u.username AS username,
+           u.user_avatar AS userAvatar,
+           c.content AS content,
+           c.create_time AS createTime,
+           c.like_count AS likeCount,
+           c.img_path AS imgPath,
+           c.p_comment_id AS pCommentId,
+           c.reply_user_id AS replyUserId,
+           NULL AS replyNickName
+    FROM tb_comment c
+    LEFT JOIN tb_user u ON c.user_id = u.id
+    WHERE c.playlist_id = #{playlistId} AND c.type = 1 AND c.p_comment_id = 0
+    ORDER BY c.top_type DESC, c.id DESC
+  </select>
+
+  <!-- 一级（分页由服务端补充）专辑评论：示例展示，现仍返回全量，由Service截断或直接使用无分页（保持现状） -->
+  <!-- 保留 Java 注解版查询用于简单列表，这里主要提供带children的查询可复用 -->
+</mapper>

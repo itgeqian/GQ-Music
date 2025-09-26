@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.edu.seig.vibemusic.mapper.PlaylistBindingMapper">
+    <!-- 批量插入（忽略重复） -->
+    <insert id="insertBatchIgnore">
+        INSERT IGNORE INTO tb_playlist_binding(playlist_id, song_id)
+        VALUES
+        <foreach collection="list" item="it" separator="," >
+            (#{it.playlistId}, #{it.songId})
+        </foreach>
+    </insert>
+
+    <!-- 查询歌单内歌曲（分页由 Service 层 Page 包装，SQL 仅负责条件） -->
+    <select id="selectSongsOfPlaylist" resultType="cn.edu.seig.vibemusic.model.vo.PlaylistSongVO">
+        SELECT b.id,
+               s.id AS songId,
+               s.name AS songName,
+               a.name AS artistName,
+               s.album,
+               s.cover_url AS coverUrl,
+               s.audio_url AS audioUrl,
+               s.release_time AS releaseTime
+        FROM tb_playlist_binding b
+        JOIN tb_song s ON b.song_id = s.id
+        LEFT JOIN tb_artist a ON s.artist_id = a.id
+        WHERE b.playlist_id = #{playlistId}
+        <if test="keyword != null and keyword.trim() != ''">
+            AND (s.name LIKE CONCAT('%', #{keyword}, '%') OR a.name LIKE CONCAT('%', #{keyword}, '%'))
+        </if>
+        ORDER BY b.id DESC
+    </select>
+
+    <!-- 批量更新排序号 -->
+    <!-- 批量更新排序号：使用 CASE WHEN 单条语句，避免多语句执行受限 -->
+    <!-- 删除：已移除排序能力，无需批量更新排序方法 -->
+</mapper>

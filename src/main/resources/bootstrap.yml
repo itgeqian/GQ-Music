@@ -1,0 +1,21 @@
+spring:
+  application:
+    name: vibe-music-server
+  profiles:
+    active: dev
+  config:
+    import:
+      - optional:nacos:${spring.application.name}-${spring.profiles.active}.yml
+  cloud:
+    nacos:
+      config:
+        server-addr: 127.0.0.1:8848
+        file-extension: yml
+        # 如果需要鉴权/多空间，请取消注释
+        # username: nacos
+        # password: nacos
+        # namespace: public
+        # group: DEFAULT_GROUP
+        # 使用 spring.config.import 进行导入，无需 shared-configs
+
+

@@ -1,0 +1,66 @@
+:root {
+    --el-color-primary: var(--primary);
+    --el-fill-color-blank: hsl(var(--background));
+  }
+
+html.dark {
+    /* 自定义深色背景颜色 */
+    --el-color-primary: var(--primary);
+    --el-fill-color-blank: hsl(var(--background));
+}
+
+/*下拉框*/
+.el-select__wrapper{
+    @apply p-4 py-3 rounded-md
+}
+
+
+.el-button+.el-button{
+    margin-left: 0px;
+}
+
+.drawer-bg {
+    position: relative;
+    overflow: hidden;
+    background-repeat: no-repeat;
+    background-color: hsl(var(--dm-background));
+  }
+
+/* 全局透明化：Tabs、Pagination、Table 容器默认背景 */
+.el-tabs, .el-tabs__header, .el-tabs__nav-wrap, .el-tabs__nav-scroll, .el-tabs__nav,
+.el-pagination, .el-pagination__total, .el-pagination__sizes, .el-pagination__jump,
+.el-pagination.is-background .btn-prev, .el-pagination.is-background .btn-next,
+.el-pagination.is-background .el-pager li,
+.el-card, .el-card__header, .el-card__body {
+  background-color: transparent !important;
+  box-shadow: none !important;
+}
+
+/* Tabs 下边线淡化 */
+.el-tabs__active-bar, .el-tabs__nav-wrap::after { background-color: transparent !important; border: none !important; }
+
+/* 兜底：表格所有层背景透明（头/体/滚动容器）*/
+.el-table, .el-table * {
+  background-color: transparent !important;
+}
+
+  .drawer-bg::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-image: var(--track-cover-url);
+    /* 使用自定义属性 */
+    background-repeat: no-repeat;
+    /* // background-size: 130%; 将背景图像放大到150% */
+    background-position: center;
+    filter: blur(60px);
+    z-index: -1;
+    mask-image: linear-gradient(
+      to bottom,
+      rgba(0, 0, 0, 0.5) 1%,
+      rgba(0, 0, 0, 0)
+    );
+  }
