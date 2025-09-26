@@ -1,203 +1,613 @@
-# Vibe Music Server 🎶
+### GQ Music V1.0完成
 
-## 介绍 📖
+一个完整的在线音乐平台二改于[Alex-LiSun/vibe-music-server: Vibe Music 服务端](https://github.com/Alex-LiSun/vibe-music-server)，包含后端服务、管理端与客户端三套应用。技术栈：Spring Boot + MySQL + Redis + MinIO + Nacos+ Vue3 + Element Plus + Vite。
 
-**Vibe Music Server** 是 Vibe Music 项目的后端 API 服务。本项目基于 **Spring Boot 3** 构建，采用 **Java 17**、**Maven**、**MyBatis-Plus**、**MySQL**、**Redis** 和 **MinIO** 等技术，为 Vibe Music 的客户端和管理端提供稳定、高效的数据支持和业务逻辑处理。
+- 仓库地址：[`https://github.com/itgeqian/GQ-Music.git`](https://github.com/itgeqian/GQ-Music.git)
 
-## 主要功能 ✨
+---
 
-本服务提供以下核心功能 API：
+## 一、项目结构
 
-- **用户认证与管理**: 提供用户注册、登录、信息修改、头像上传、注销等接口，支持管理员对用户进行管理（查询、禁用/启用）。
-- **内容管理**:
-    - **歌手管理**: 添加、编辑、删除歌手信息。
-    - **歌曲管理**: 添加、编辑、删除歌曲信息，处理歌曲文件上传。
-    - **歌单管理**: 创建、编辑、删除歌单，管理歌单歌曲。
-    - **轮播图管理**: 添加、编辑、删除首页轮播图。
-- **用户互动**:
-    - **评论管理**: 发表、查看、删除歌曲或歌单的评论。
-    - **收藏管理**: 用户收藏/取消收藏歌曲、歌单。
-    - **反馈管理**: 提交、查看、处理用户反馈。
-- **文件服务**: 使用 MinIO 存储和管理音乐文件、图片（如头像、封面）等静态资源。
-- **权限控制**: 基于 JWT 和角色进行 API 访问权限控制。
-- **数据缓存**: 利用 Redis 缓存热点数据，提高访问速度。
-- **邮件服务**: 支持发送验证码等邮件通知。
+```
+vibe-music-server-main/
+├─ src/                          # 后端源码（Spring Boot 3 / Java 17）
+├─ sql/                          # 数据库初始化
+├─ img/                          # 文档配图
+├─ vibe-music-admin-main/        # 管理端（Vue3 + Element Plus）
+├─ vibe-music-client-main/       # 客户端（Vue3 + Element Plus）
+├─ start_services.bat            # 本地一键启动依赖服务（Redis+Nacos+Minio）
+├─ pom.xml
+├─ GQ-music优化笔记  #记录了30多个大更新
+└─ README.md V1.0版本文档
+```
 
-## 技术栈 🛠️
+- 服务端端口默认：后端 8080（可在 `application.yml` 配置）
+- 前端端口默认：客户端8089，管理端 8090（Vite）
 
-- **后端框架**: [Spring Boot 3](https://spring.io/projects/spring-boot)
-- **开发语言**: [Java 17](https://www.oracle.com/java/technologies/javase/jdk17-archive-downloads.html)
-- **构建工具**: [Maven](https://maven.apache.org/)
-- **数据库**: [MySQL](https://www.mysql.com/) (推荐 8.0+)
-- **ORM**: [MyBatis-Plus](https://baomidou.com/)
-- **缓存**: [Redis](https://redis.io/)
-- **对象存储**: [MinIO](https://min.io/)
-- **认证**: [JWT (java-jwt)](https://github.com/auth0/java-jwt)
-- **数据库连接池**: [Druid](https://github.com/alibaba/druid)
-- **工具库**: Lombok, Spring Boot Validation, Java Mail
+---
 
-## 系统需求 ⚙️
+## 二、功能总览
 
-- **JDK**: `17` 或更高版本
-- **Maven**: `3.6` 或更高版本
-- **MySQL**: `8.0` 或更高版本
-- **Redis**: 推荐 `6.0` 或更高版本
-- **MinIO**: 最新稳定版
+- 用户与权限
+  - 登录/注册、JWT 鉴权、角色（管理员/用户）
+  - 用户资料、头像上传、关注/粉丝
+- 音乐内容
+  - 歌手、歌曲、专辑、歌单的增删改查与绑定
+  - 音频与封面文件上传（MinIO）
+- 互动与社交
+  - 评论（父子结构、回复 @、图片评论、点赞/取消点赞）
+  - 收藏/取消收藏（歌曲/专辑/歌单）
+  - 反馈提交、我的最近播放、听歌时段统计
+- 可视化/推荐
+  - 个人主页近 7 日收听走势（SVG 折线优化）
+  - 歌手榜、听歌时段分布、歌单/歌曲推荐（脚本/规则）
+- 运维与性能
+  - Redis 缓存（歌曲详情、评论等）、缓存逐出
+  - SQL 脚本分版本管理（`/sql`）
+  - MinIO 对象存储，公私桶可配
+  - 可接入 Nacos 做配置/注册
+- 略，详情见优化笔记
 
-## 代码仓库 ⭐
+---
 
-- [GitHub 代码仓库](https://github.com/Alex-LiSun/vibe-music-server.git)
+## 三、环境要求
 
-## 文件下载 📥
+- JDK 17+
+- Maven 3.8+
+- MySQL 8.0+
+- Redis 6.0+
+- MinIO（本地或远端）
+- Node.js 18+（前端）
 
-本项目包含的所有文件，均已通过MinIO存储桶的形式进行分享，并提供百度网盘的下载链接。
-- vibe-music-data: [https://pan.baidu.com/s/1IHU2EBodNmmjCeYi7_Tw5g?pwd=1234] (提取码: `1234`)
+Nacos 2.x（做配置中心与注册中心）
 
-![vibe-music-data](https://github.com/Alex-LiSun/vibe-music-server/blob/main/img/vibe-music-data.png)
-![vibe-music-data](https://github.com/Alex-LiSun/vibe-music-server/blob/main/img/vibe-music-data-songs.png)
+---
 
-## 安装与启动 🚀
+## 四、快速开始（本地）
 
-1.  **克隆项目**
+### 1. 初始化数据库
 
-    ```bash
-    # GitHub (示例)
-    git clone https://github.com/Alex-LiSun/vibe-music-server.git
+- 创建库（字符集 UTF8MB4）：
+```sql
+CREATE DATABASE vibe_music CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+```
+- 依次执行 `/sql` 目录下初始化与增量脚本（按日期顺序）。
 
-    cd vibe-music-server
-    ```
+关于表结构
 
-2.  **环境准备**
+![img](https://www.legendkiller.xyz/wp-content/uploads/2025/09/image-201.png)
 
-    - 确保已安装并运行 **MySQL 8.0+** 数据库服务。
-    - 创建名为 `vibe_music` 的数据库 (或与配置文件中名称一致)，并使用 `UTF-8` 字符集。
-        ```sql
-        CREATE DATABASE vibe_music CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
-        ```
-    - 确保已安装并运行 **Redis** 服务。
-    - 确保已安装并运行 **MinIO** 服务。
-    - 在 MinIO 中创建一个名为 `vibe-music-data` 的 Bucket (或与配置文件中名称一致)，并确保服务具有读写权限。
+### 2. 准备 MinIO
 
-3.  **配置应用**
+- 创建桶：`vibe-music-data`
+- 配置公共读或按需设置签名访问
+- 资源示意见文档图：`/img/minio目录讲解.png`
 
-    - 找到并修改 `src/main/resources/application.yml` 文件。
-    - **数据库配置**: 修改 `spring.datasource` 下的 `url`, `username`, `password` 以匹配你的 MySQL 环境。
-    - **Redis 配置**: 修改 `spring.data.redis` 下的 `host`, `port`, `password` (如果需要) 以匹配你的 Redis 环境。
-    - **MinIO 配置**: 修改 `minio` 下的 `endpoint`, `accessKey`, `secretKey`, `bucket` 以匹配你的 MinIO 环境。
-    - **邮件服务配置 (可选)**: 如果需要邮件功能（如验证码），修改 `spring.mail` 下的 `host`, `username`, `password`。 **注意：请勿将生产环境的敏感密码直接提交到代码库。** 建议使用环境变量或配置中心管理。
+### 3. 配置后端
 
-    ```yaml
-    # src/main/resources/application.yml (部分示例)
+编辑 `src/main/resources/application.yml`（仅示例字段）：
+```yaml
+spring:
+  datasource:
+    url: jdbc:mysql://127.0.0.1:3306/vibe_music?useUnicode=true&characterEncoding=utf-8&useSSL=false
+    username: root
+    password: your_mysql_pwd
 
-    spring:
-      datasource:
-        url: jdbc:mysql://YOUR_MYSQL_HOST:3306/vibe_music?useUnicode=true&characterEncoding=utf-8&useSSL=false # 修改你的 MySQL 地址和库名
-        username: YOUR_MYSQL_USER # 修改你的 MySQL 用户名
-        password: YOUR_MYSQL_PASSWORD # 修改你的 MySQL 密码
-        # ...
+  data:
+    redis:
+      host: 127.0.0.1
+      port: 6379
+      password:
+      database: 1
 
-      data:
-        redis:
-          host: YOUR_REDIS_HOST # 修改你的 Redis 地址
-          port: 6379
-          password: YOUR_REDIS_PASSWORD # 如果 Redis 有密码，取消注释并修改
-          database: 1
-          # ...
+minio:
+  endpoint: http://127.0.0.1:9000
+  accessKey: your_access_key
+  secretKey: your_secret_key
+  bucket: vibe-music-data
 
+# 开启/调整缓存空间
+spring:
+  cache:
+    type: redis
+```
+
+使用 Nacos，请增加相应 `bootstrap.yml` 或 `application.yml` 的 Nacos 配置。
+
+重要配置放nacos
+
+```
+server:
+  port: 8080
+
+spring:
+  datasource:
+    url: jdbc:mysql://127.0.0.1:3306/vibe_music?useUnicode=true&characterEncoding=utf-8&useSSL=false
+    username: root
+    password: 123456 #换成你的密码
+    driver-class-name: com.mysql.cj.jdbc.Driver
+
+  data:
+    redis:
+      host: 127.0.0.1
+      port: 6379
+      password: #没有就留空或注释，有就填
+      database: 1
+
+  mail:
+    host: smtp.qq.com
+    username: 换成你的username
+    password: 换成你的password
+    protocol: smtp
+    properties:
       mail:
-        host: smtp.example.com # 修改你的 SMTP 服务器地址
-        username: your-email@example.com # 修改你的邮箱账号
-        password: YOUR_EMAIL_APP_PASSWORD # 修改你的邮箱应用密码或授权码
-        # ...
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+            required: true
+          ssl:
+            enable: true
+          socketFactory:
+            port: 465
+            class: javax.net.ssl.SSLSocketFactory
+          connectiontimeout: 5000
+          timeout: 3000
+          writetimeout: 5000
 
-    minio:
-      endpoint: http://YOUR_MINIO_HOST:9000 # 修改你的 MinIO 端点
-      accessKey: YOUR_MINIO_ACCESS_KEY # 修改你的 MinIO Access Key
-      secretKey: YOUR_MINIO_SECRET_KEY # 修改你的 MinIO Secret Key
-      bucket: vibe-music-data # 确认 Bucket 名称与你创建的一致
-    ```
+minio:
+  endpoint: http://192.168.100.1:9000 
+  accessKey: 换成你的accessKey
+  secretKey: 换成你的secretKey
+  bucket: vibe-music-data
 
-4.  **构建项目** (使用 Maven)
+# 保留本地的角色/权限和 mybatis-plus 配置，也可放 Nacos
+mybatis-plus:
+  configuration:
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+    map-underscore-to-camel-case: true
+  global-config:
+    db-config:
+      table-prefix: tb_
 
-    在项目根目录下执行：
-    ```bash
-    mvn clean package -DskipTests
-    ```
-    这将在 `target` 目录下生成一个可执行的 JAR 文件 (例如 `vibe-music-server-0.0.1-SNAPSHOT.jar`)。
+role-path-permissions:
+  permissions:
+    ROLE_ADMIN:
+      - "/admin/"
+      - "/theme/"
+      - "/user/theme/"
+    ROLE_USER:
+      - "/user/"
+      - "/playlist/"
+      - "/artist/"
+      - "/song/"
+      - "/recent/"
+      - "/album/"
+      - "/favorite/"
+      - "/comment/"
+      - "/banner/"
+      - "/feedback/"
+      - "/theme/"
+      - "/user/theme/"
+ffmpeg:
+  show-log: true
+```
 
-5.  **运行服务**
 
-    ```bash
-    java -jar target/vibe-music-server-*.jar
-    ```
-    服务默认启动在 `8080` 端口 (Spring Boot 默认端口，可在 `application.yml` 中通过 `server.port` 修改)。
 
-## 项目脚本 📜 (Maven)
+### 4. 启动后端
 
-- `mvn clean`: 清理构建产物。
-- `mvn compile`: 编译项目源代码。
-- `mvn test`: 运行单元测试。
-- `mvn package`: 打包项目为可执行 JAR 文件。
-- `mvn spring-boot:run`: 启动 Spring Boot 应用 (用于开发)。
-- `java -jar target/*.jar`: 运行打包后的 JAR 文件。
+```bash
+mvn clean package -DskipTests
+java -jar target/*.jar
+# 默认 http://localhost:8080
+```
 
-## 项目演示 📺
+### 5. 启动前端（客户端）
 
-视频地址：[https://www.bilibili.com/video/BV1tKJ8z8E6z/]
+```bash
+cd vibe-music-client-main
+pnpm i   # 或 npm i / yarn
+pnpm run dev # 默认 http://localhost:8090
+```
 
-## API 文档 接口
+如需配置后端地址，检查 `src/api/index.ts` 或 `.env`（例如 `VITE_API_BASE`）。
 
-本项目旨在为 [Vibe Music Client](https://github.com/Alex-LiSun/vibe-music-client) (客户端) 和 [Vibe Music Admin](https://github.com/Alex-LiSun/vibe-music-admin) (管理端) 提供后端支持。具体的 API 接口定义和使用方式，请参考项目源代码中的 Controller 层代码，或使用 API 文档工具 (如 Swagger，如果项目中集成了的话) 查看。
+### 6. 启动管理端
 
-## 依赖服务说明 🔗
+```bash
+cd vibe-music-admin-main
+pnpm i
+pnpm run dev # 默认 http://localhost:8089
+```
 
-本项目运行依赖以下外部服务，请确保它们已正确安装、配置并正在运行：
+同样可通过 `.env` 或 `src/utils/http` 指定后端网关地址。
 
-- **MySQL**: 用于持久化存储核心业务数据。
-- **Redis**: 用于数据缓存，提升性能。
-- **MinIO**: 用于存储音乐文件、图片等静态资源。
+---
 
-## 免责声明 ⚠️
+## 五、关键模块说明
 
-**Vibe Music Server** 项目仅供学习和技术研究使用。所有由本服务管理和存储的数据（包括用户信息、音乐文件、图片等）均由您自行配置和运行的 **MySQL**, **Redis**, **MinIO** 服务承载。请在遵守相关国家和地区的法律法规以及版权政策的前提下使用。
+- 评论（父子结构）
+  
+- 歌手模块+歌曲模块+专辑模块+歌单模块的整个链路
 
-- **请勿用于任何商业用途。**
-- 对于因使用本项目而可能产生的任何直接或间接问题、数据安全风险、版权纠纷或经济损失，项目作者不承担任何责任。
-- 用户需自行承担所有使用风险，包括确保数据来源合法合规，以及所依赖服务的安全稳定运行。
+- 歌词模块
 
-在您部署和使用本软件前，请仔细阅读并理解本免责声明。继续使用即表示您同意本声明的所有条款。
+- 音频条+专辑呼吸动效
 
-## 许可证 📄
+- FFmpeg转码
 
-本项目采用 MIT 许可证 - 查看 [LICENSE](LICENSE) 文件了解详情
+- 新增图形验证码
 
-## 贡献 ❤️
+- 搜索模块支持音乐（歌曲/歌手/专辑）和用户
 
-欢迎各种形式的贡献，包括提交 Issue、Pull Request 或提出建议！
+- 歌手详情页/专辑详情页/歌单详情页支持搜索和排序（默认/专辑/歌名/歌手）
 
-## 常见问题 (FAQ) ❓
+- 管理端批量导入歌曲优化操作
 
-- **启动失败，提示数据库连接错误？**
-    - 检查 `application.yml` 中的 `spring.datasource` 配置是否正确 (URL、用户名、密码)。
-    - 确认 MySQL 服务是否正在运行，并且网络可达。
-    - 确认数据库 `vibe_music` 是否已创建，并且字符集正确。
-    - 检查 MySQL 用户是否有权限访问该数据库。
+- 点赞评论逻辑重写
 
-- **启动失败，提示 Redis 连接错误？**
-    - 检查 `application.yml` 中的 `spring.data.redis` 配置是否正确 (host, port, password)。
-    - 确认 Redis 服务是否正在运行，并且网络可达。
+- 轮播图绑定专辑
 
-- **文件上传失败或无法访问？**
-    - 检查 `application.yml` 中的 `minio` 配置是否正确 (endpoint, accessKey, secretKey, bucket)。
-    - 确认 MinIO 服务是否正在运行，并且网络可达。
-    - 确认 MinIO 中名为 `vibe-music-data` (或你配置的名称) 的 Bucket 是否已创建。
-    - 检查 MinIO 的 Bucket 策略或服务权限设置，确保应用有读写权限。
-    - 检查 `spring.servlet.multipart` 的 `max-file-size` 和 `max-request-size` 是否足够大。
+- 热搜榜的实现
 
-- **端口冲突 (Port already in use)？**
-    - 检查是否有其他程序占用了 `8080` 端口 (或其他你在 `application.yml` 中配置的 `server.port`)。
-    - 你可以修改 `application.yml` 中的 `server.port` 来使用其他端口。
+- 我的歌单模块的实现
 
-- **如何查看 API 接口？**
-    - 如果项目集成了 Swagger 或 SpringDoc，启动服务后通常可以通过访问 `/swagger-ui.html` 或 `/v3/api-docs` 来查看和测试 API。
-    - 如果没有集成文档工具，需要直接查看 `src/main/java/.../controller` 目录下的 Java 代码来了解接口定义。
+- 最近播放的实现
+
+- 歌单推荐模块
+
+- 歌曲、专辑、歌单（官方/我的）评论管理模块
+
+- 主题模块（官方主题-图片/视频 与自定义-图片）
+
+- 支持flac无损歌曲导入
+
+- 优化级联删除的全链路
+
+- 缓存策略（详解见优化笔记中的本项目缓存机制总览（Spring Cache + RedisTemplate））
+  
+  - `@Cacheable` + `@CacheEvict`
+  - SpringCache
+  
+- 加入播放列表
+  
+- 个人设置
+  
+- 评论支持图片与表情
+  
+- 文件存储
+  - MinIO 统一管理封面/音频/头像/评论图片等等
+  
+  ![img](https://www.legendkiller.xyz/wp-content/uploads/2025/09/image-200.png)
+  
+- 内容过多更多内容详情见详见GQ-music优化笔记
+
+---
+
+## 六、常用脚本
+
+后端（Maven）：
+- `mvn clean`、`mvn package -DskipTests`、`mvn spring-boot:run`
+
+前端（Vite）：
+- `pnpm dev`、`pnpm build`、`pnpm preview`
+
+---
+
+## 七、部署建议
+
+- 后端：JDK17 + Docker（可选）+ Nginx 反向代理
+- 静态前端：`pnpm build` 后放到 Nginx
+- 依赖：MySQL/Redis/MinIO 使用持久卷
+- 环境变量注入敏感信息（数据库、对象存储密钥等）
+
+---
+
+## 八、资料与数据
+
+- 资源桶结构示例见仓库 `/img` 下配图
+- 如需示例数据可按 `/sql` 导入
+- 也可自定义导入 CSV/脚本生成
+
+---
+
+## 九、后续计划
+
+- 支付模块
+- AI生成音乐接口
+- MV模块（利用FFmpeg）
+
+
+
+## 十、用户端 部分页面截图
+
+### 1.推荐页面
+
+![img](https://www.legendkiller.xyz/wp-content/uploads/2025/09/image-202-1.png)
+
+- 轮播图可以跳转到管理端指定的专辑页面
+- 歌单推荐和歌曲推荐走的是不同的推荐逻辑
+
+### 2.搜索页
+
+![img](https://www.legendkiller.xyz/wp-content/uploads/2025/09/image-203-1.png)
+
+- 选择音乐时可以按照歌手/专辑/歌曲名进行搜索
+- 选择用户时按照用户名搜索
+
+接下来避免看不清我关掉了主题
+
+![img](https://www.legendkiller.xyz/wp-content/uploads/2025/09/image-204.png)
+
+点击右箭头可以跳转用户个人详情
+
+### 3.个人详情页
+
+![img](https://www.legendkiller.xyz/wp-content/uploads/2025/09/image-205-1.png)
+
+可以收起统计
+
+![img](https://www.legendkiller.xyz/wp-content/uploads/2025/09/image-206.png)
+
+点击粉丝和关注显示自己的粉丝和关注用户，同样点击后跳转到其他用户详情
+
+![img](https://www.legendkiller.xyz/wp-content/uploads/2025/09/image-207.png)
+
+若用户开启了私密模式则无法显示其喜欢的歌曲、收藏的歌单、以及创建的歌单
+
+![img](https://www.legendkiller.xyz/wp-content/uploads/2025/09/image-208.png)
+
+### 4.曲库模块（所有歌曲）
+
+![img](https://www.legendkiller.xyz/wp-content/uploads/2025/09/image-209-1.png)
+
+![img](https://www.legendkiller.xyz/wp-content/uploads/2025/09/image-210.png)
+
+这里的更多中下拉可以看到更多的操作
+
+### 5.歌手模块
+
+![img](https://www.legendkiller.xyz/wp-content/uploads/2025/09/image-211-1.png)
+
+按分类筛选歌手，点击后可以进入歌手详情页
+
+### 6.歌手详情页
+
+![img](https://www.legendkiller.xyz/wp-content/uploads/2025/09/image-265-1.png)
+
+歌曲、专辑、详情导航
+
+![img](https://www.legendkiller.xyz/wp-content/uploads/2025/09/image-213.png)
+
+详情页
+
+![img](https://www.legendkiller.xyz/wp-content/uploads/2025/09/image-216-1.png)
+
+专辑导航显示出所有专辑懒加载展开后显示所有歌曲，也可以点击专辑名跳转到专辑详情页
+
+![img](https://www.legendkiller.xyz/wp-content/uploads/2025/09/image-214.png)
+
+### 7.专辑详情页
+
+![img](https://www.legendkiller.xyz/wp-content/uploads/2025/09/image-215-1.png)
+
+专辑信息页
+
+![img](https://www.legendkiller.xyz/wp-content/uploads/2025/09/image-217-1.png)
+
+专辑评论区
+
+![img](https://www.legendkiller.xyz/wp-content/uploads/2025/09/image-218.png)
+
+### 8.歌单模块（官方歌单）
+
+![img](https://www.legendkiller.xyz/wp-content/uploads/2025/09/image-219-1.png)
+
+点击进入歌单详情页
+
+![img](https://www.legendkiller.xyz/wp-content/uploads/2025/09/image-220.png)
+
+### 9.喜欢模块
+
+显示喜欢的歌曲、专辑、歌手
+
+![img](https://www.legendkiller.xyz/wp-content/uploads/2025/09/image-221.png)
+
+### 10.我的歌单-创建我的歌单
+
+![img](https://www.legendkiller.xyz/wp-content/uploads/2025/09/image-222.png)
+
+创建方式
+
+1.自己在我的歌单页创建
+
+![img](https://www.legendkiller.xyz/wp-content/uploads/2025/09/image-223.png)
+
+![img](https://www.legendkiller.xyz/wp-content/uploads/2025/09/image-224.png)
+
+评论管理：管理其他用户对你的歌单的评价
+
+上传封面：就是上传封面
+
+![img](https://www.legendkiller.xyz/wp-content/uploads/2025/09/image-225.png)
+
+2.歌曲更多下拉框中添加到中选择
+
+![img](https://www.legendkiller.xyz/wp-content/uploads/2025/09/image-226-1.png)
+
+### 11.最近播放
+
+![img](https://www.legendkiller.xyz/wp-content/uploads/2025/09/image-227.png)
+
+这里的更多多了移除按钮，可以把歌曲移出最近播放，你也可以清除全部记录
+
+![img](https://www.legendkiller.xyz/wp-content/uploads/2025/09/image-228.png)
+
+### 12.个人中心
+
+也就是别人看的个人详情页记录自己的一些数据这里不多做介绍
+
+![img](https://www.legendkiller.xyz/wp-content/uploads/2025/09/image-229.png)
+
+### 13.收藏的歌单
+
+收藏的歌单放在这里，可以滚动
+
+![img](https://www.legendkiller.xyz/wp-content/uploads/2025/09/image-230-344x1024.png)
+
+### 14.个人设置
+
+更新/修改信息
+
+是否公开主页
+
+自动播放/恢复进度/音频条开关
+
+是否开启首页推荐
+
+快捷键播放
+
+音频条如下
+
+![img](https://www.legendkiller.xyz/wp-content/uploads/2025/09/image-238-1.png)
+
+![img](https://www.legendkiller.xyz/wp-content/uploads/2025/09/image-231.png)
+
+### 15.暗色模式与亮色模式
+
+![img](https://www.legendkiller.xyz/wp-content/uploads/2025/09/image-232.png)
+
+### 16.主题功能
+
+官方主题分为静态和动态
+
+![img](https://www.legendkiller.xyz/wp-content/uploads/2025/09/image-233.png)
+
+![img](https://www.legendkiller.xyz/wp-content/uploads/2025/09/image-234.png)
+
+当然也可以自定义图片上传，自定义不支持视频以防网站压力过大
+
+模糊度和亮度就不做解释了
+
+### 17.意见反馈
+
+![img](https://www.legendkiller.xyz/wp-content/uploads/2025/09/image-235.png)
+
+### 18.歌曲播放页面
+
+随机播放、循环播放、顺序播放
+
+![img](https://www.legendkiller.xyz/wp-content/uploads/2025/09/image-236-1.png)
+
+呼吸光效
+
+歌词
+
+评论可以上传图片和回复及删除-个人删与管理员删（歌单、专辑的评论也一样）
+
+![img](https://www.legendkiller.xyz/wp-content/uploads/2025/09/image-237-1.png)
+
+### 19.登录、注册、重置密码
+
+![img](https://www.legendkiller.xyz/wp-content/uploads/2025/09/image-239.png)
+
+![img](https://www.legendkiller.xyz/wp-content/uploads/2025/09/image-240.png)
+
+![img](https://www.legendkiller.xyz/wp-content/uploads/2025/09/image-241.png)
+
+## 十一、管理端部分截图
+
+管理端基于vue-pure-admin
+
+### 1.首页
+
+![img](https://www.legendkiller.xyz/wp-content/uploads/2025/09/image-242.png)
+
+### 2.用户管理
+
+![img](https://www.legendkiller.xyz/wp-content/uploads/2025/09/image-243.png)
+
+### 3.歌手管理
+
+![img](https://www.legendkiller.xyz/wp-content/uploads/2025/09/image-244.png)
+
+![img](https://www.legendkiller.xyz/wp-content/uploads/2025/09/image-245-1024x613.png)
+
+![img](https://www.legendkiller.xyz/wp-content/uploads/2025/09/image-246-1024x906.png)
+
+上传头像
+
+![img](https://www.legendkiller.xyz/wp-content/uploads/2025/09/image-247.png)
+
+### 4.歌曲管理
+
+![img](https://www.legendkiller.xyz/wp-content/uploads/2025/09/image-248-1.png)
+
+![img](https://www.legendkiller.xyz/wp-content/uploads/2025/09/image-249.png)
+
+![img](https://www.legendkiller.xyz/wp-content/uploads/2025/09/image-250.png)
+
+上传音频时歌词可选传
+
+### 5.批量导入歌曲
+
+支持拖拽
+
+![img](https://www.legendkiller.xyz/wp-content/uploads/2025/09/image-251.png)
+
+![img](https://www.legendkiller.xyz/wp-content/uploads/2025/09/image-252.png)
+
+### 6.专辑管理
+
+![img](https://www.legendkiller.xyz/wp-content/uploads/2025/09/image-253.png)
+
+![img](https://www.legendkiller.xyz/wp-content/uploads/2025/09/image-254.png)
+
+### 7.歌单管理之官方歌单
+
+![img](https://www.legendkiller.xyz/wp-content/uploads/2025/09/image-255-1.png)
+
+![img](https://www.legendkiller.xyz/wp-content/uploads/2025/09/image-256.png)
+
+添加歌曲界面跟用户端我的歌单一样
+
+![img](https://www.legendkiller.xyz/wp-content/uploads/2025/09/image-257-1.png)
+
+![img](https://www.legendkiller.xyz/wp-content/uploads/2025/09/image-258-1.png)
+
+### 8.歌单管理之用户歌单
+
+![img](https://www.legendkiller.xyz/wp-content/uploads/2025/09/image-259.png)
+
+用户歌单只支持读和推荐
+
+![img](https://www.legendkiller.xyz/wp-content/uploads/2025/09/image-260-1.png)
+
+### 9.反馈模块
+
+![img](https://www.legendkiller.xyz/wp-content/uploads/2025/09/image-261-1.png)
+
+### 10.轮播图管理
+
+![img](https://www.legendkiller.xyz/wp-content/uploads/2025/09/image-262-1.png)
+
+编辑轮播图可以选择绑定专辑
+
+![img](https://www.legendkiller.xyz/wp-content/uploads/2025/09/image-263-1.png)
+
+### 11.主题管理
+
+增删改查
+
+支持上传图片格式和视频格式
+
+![img](https://www.legendkiller.xyz/wp-content/uploads/2025/09/image-264-1.png)
+
+   主要大的功能大概就这多，更细小我就不截图了
+
+
+
+---
+
+# 未完待续

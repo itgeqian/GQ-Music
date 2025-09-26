@@ -11,7 +11,7 @@
  Target Server Version : 80026 (8.0.26)
  File Encoding         : 65001
 
- Date: 26/09/2025 20:51:17
+ Date: 26/09/2025 21:55:39
 */
 
 SET NAMES utf8mb4;
@@ -27,7 +27,7 @@ CREATE TABLE `tb_admin`  (
   `password` varchar(64) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL COMMENT '管理员密码',
   PRIMARY KEY (`id`) USING BTREE,
   UNIQUE INDEX `username`(`username` ASC) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 171 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci ROW_FORMAT = DYNAMIC;
+) ENGINE = InnoDB AUTO_INCREMENT = 171 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci COMMENT = '管理员表' ROW_FORMAT = DYNAMIC;
 
 -- ----------------------------
 -- Records of tb_admin
@@ -158,10 +158,10 @@ CREATE TABLE `tb_artist`  (
   `birth` date NULL DEFAULT NULL COMMENT '歌手出生日期',
   `area` varchar(30) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NULL DEFAULT NULL COMMENT '歌手国籍',
   `introduction` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NULL DEFAULT NULL COMMENT '歌手简介',
-  `detail` text CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NULL,
+  `detail` text CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NULL COMMENT '歌手详情（生平介绍，获奖情况等）',
   PRIMARY KEY (`id`) USING BTREE,
   INDEX `name`(`name` ASC) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 169 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci ROW_FORMAT = DYNAMIC;
+) ENGINE = InnoDB AUTO_INCREMENT = 169 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci COMMENT = '歌手表' ROW_FORMAT = DYNAMIC;
 
 -- ----------------------------
 -- Records of tb_artist
@@ -217,7 +217,7 @@ CREATE TABLE `tb_banner`  (
   `status` tinyint NOT NULL COMMENT '轮播图状态：0-启用，1-禁用',
   `album_id` bigint NULL DEFAULT NULL COMMENT '关联专辑ID',
   PRIMARY KEY (`id`) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 32 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci ROW_FORMAT = DYNAMIC;
+) ENGINE = InnoDB AUTO_INCREMENT = 32 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci COMMENT = '轮播图表' ROW_FORMAT = DYNAMIC;
 
 -- ----------------------------
 -- Records of tb_banner
@@ -326,7 +326,7 @@ CREATE TABLE `tb_feedback`  (
   PRIMARY KEY (`id`) USING BTREE,
   INDEX `fk_feedback_user_id`(`user_id` ASC) USING BTREE,
   CONSTRAINT `fk_feedback_user_id` FOREIGN KEY (`user_id`) REFERENCES `tb_user` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
-) ENGINE = InnoDB AUTO_INCREMENT = 74 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci ROW_FORMAT = DYNAMIC;
+) ENGINE = InnoDB AUTO_INCREMENT = 74 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci COMMENT = '用户反馈表' ROW_FORMAT = DYNAMIC;
 
 -- ----------------------------
 -- Records of tb_feedback
@@ -346,7 +346,7 @@ CREATE TABLE `tb_genre`  (
   INDEX `fk_genre_style_id`(`style_id` ASC) USING BTREE,
   CONSTRAINT `fk_genre_song_id` FOREIGN KEY (`song_id`) REFERENCES `tb_song` (`id`) ON DELETE CASCADE ON UPDATE RESTRICT,
   CONSTRAINT `fk_genre_style_id` FOREIGN KEY (`style_id`) REFERENCES `tb_style` (`id`) ON DELETE CASCADE ON UPDATE RESTRICT
-) ENGINE = InnoDB CHARACTER SET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci ROW_FORMAT = DYNAMIC;
+) ENGINE = InnoDB CHARACTER SET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci COMMENT = '歌曲专辑风格绑定表' ROW_FORMAT = DYNAMIC;
 
 -- ----------------------------
 -- Records of tb_genre
@@ -797,7 +797,7 @@ CREATE TABLE `tb_playlist`  (
   `style` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NULL DEFAULT NULL COMMENT '歌单风格',
   PRIMARY KEY (`id`) USING BTREE,
   INDEX `idx_playlist_user_id`(`user_id` ASC) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 31 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci ROW_FORMAT = DYNAMIC;
+) ENGINE = InnoDB AUTO_INCREMENT = 31 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci COMMENT = '歌单表（官方+用户）' ROW_FORMAT = DYNAMIC;
 
 -- ----------------------------
 -- Records of tb_playlist
@@ -827,7 +827,7 @@ INSERT INTO `tb_playlist` VALUES (30, 'jaychou', 'http://192.168.100.1:9000/vibe
 -- ----------------------------
 DROP TABLE IF EXISTS `tb_playlist_binding`;
 CREATE TABLE `tb_playlist_binding`  (
-  `id` bigint NOT NULL AUTO_INCREMENT,
+  `id` bigint NOT NULL AUTO_INCREMENT COMMENT '绑定关系id',
   `playlist_id` bigint NOT NULL COMMENT '歌单 id',
   `song_id` bigint NOT NULL COMMENT '歌曲 id',
   PRIMARY KEY (`id`) USING BTREE,
@@ -835,7 +835,7 @@ CREATE TABLE `tb_playlist_binding`  (
   INDEX `fk_playlist_binding_song_id`(`song_id` ASC) USING BTREE,
   CONSTRAINT `fk_playlist_binding_playlist_id` FOREIGN KEY (`playlist_id`) REFERENCES `tb_playlist` (`id`) ON DELETE CASCADE ON UPDATE RESTRICT,
   CONSTRAINT `fk_playlist_binding_song_id` FOREIGN KEY (`song_id`) REFERENCES `tb_song` (`id`) ON DELETE CASCADE ON UPDATE RESTRICT
-) ENGINE = InnoDB AUTO_INCREMENT = 845 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci ROW_FORMAT = DYNAMIC;
+) ENGINE = InnoDB AUTO_INCREMENT = 845 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci COMMENT = '歌曲专辑绑定表' ROW_FORMAT = DYNAMIC;
 
 -- ----------------------------
 -- Records of tb_playlist_binding
@@ -1089,7 +1089,7 @@ CREATE TABLE `tb_song`  (
   INDEX `fk_song_artist_id`(`artist_id` ASC) USING BTREE,
   INDEX `idx_song_album_id`(`album_id` ASC) USING BTREE,
   CONSTRAINT `fk_song_artist_id` FOREIGN KEY (`artist_id`) REFERENCES `tb_artist` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
-) ENGINE = InnoDB AUTO_INCREMENT = 1243 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci ROW_FORMAT = DYNAMIC;
+) ENGINE = InnoDB AUTO_INCREMENT = 1243 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci COMMENT = '歌曲表' ROW_FORMAT = DYNAMIC;
 
 -- ----------------------------
 -- Records of tb_song
@@ -1867,7 +1867,7 @@ CREATE TABLE `tb_style`  (
   `name` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL COMMENT '风格名称',
   PRIMARY KEY (`id`) USING BTREE,
   UNIQUE INDEX `name`(`name` ASC) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 23 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci ROW_FORMAT = DYNAMIC;
+) ENGINE = InnoDB AUTO_INCREMENT = 23 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci COMMENT = '歌曲风格表' ROW_FORMAT = DYNAMIC;
 
 -- ----------------------------
 -- Records of tb_style
@@ -1900,23 +1900,23 @@ INSERT INTO `tb_style` VALUES (17, '韩国流行');
 -- ----------------------------
 DROP TABLE IF EXISTS `tb_theme`;
 CREATE TABLE `tb_theme`  (
-  `id` bigint NOT NULL AUTO_INCREMENT,
-  `name` varchar(64) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL,
-  `url_1080` varchar(512) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NULL DEFAULT NULL,
-  `url_1440` varchar(512) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NULL DEFAULT NULL,
-  `thumb_url` varchar(512) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NULL DEFAULT NULL,
+  `id` bigint NOT NULL AUTO_INCREMENT COMMENT '主题id',
+  `name` varchar(64) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL COMMENT '主题名称',
+  `url_1080` varchar(512) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NULL DEFAULT NULL COMMENT '1080P 资源地址（图片或视频的 1080 分辨率 URL）',
+  `url_1440` varchar(512) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NULL DEFAULT NULL COMMENT '1440P 资源地址（图片或视频的 1440 分辨率 URL）',
+  `thumb_url` varchar(512) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NULL DEFAULT NULL COMMENT '缩略图地址（用于列表/预览的小图 URL）',
   `type` tinyint NOT NULL DEFAULT 0 COMMENT '0=图片 1=视频',
-  `video_url` varchar(512) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NULL DEFAULT NULL,
-  `poster_url` varchar(512) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NULL DEFAULT NULL,
-  `duration` int NULL DEFAULT NULL,
-  `blurhash` varchar(128) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NULL DEFAULT NULL,
-  `need_vip` tinyint(1) NOT NULL DEFAULT 0,
-  `status` tinyint NOT NULL DEFAULT 1,
-  `sort` int NOT NULL DEFAULT 0,
-  `created_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  `updated_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  `video_url` varchar(512) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NULL DEFAULT NULL COMMENT '原始视频地址（type=1使用）',
+  `poster_url` varchar(512) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NULL DEFAULT NULL COMMENT '视频封面图地址（type=1 时用于视频首帧/封面）',
+  `duration` int NULL DEFAULT NULL COMMENT '时长（单位：秒，type=1 时有效）',
+  `blurhash` varchar(128) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NULL DEFAULT NULL COMMENT 'BlurHash 占位串（用于图片/视频封面加载前的模糊占位）',
+  `need_vip` tinyint(1) NOT NULL DEFAULT 0 COMMENT '是否需要VIP（0=否，1=是）',
+  `status` tinyint NOT NULL DEFAULT 1 COMMENT '上下线状态（0=下线，1=上线）',
+  `sort` int NOT NULL DEFAULT 0 COMMENT '排序权重（数字越大越靠前）',
+  `created_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+  `updated_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
   PRIMARY KEY (`id`) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 24 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB AUTO_INCREMENT = 24 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci COMMENT = '官方主题表' ROW_FORMAT = Dynamic;
 
 -- ----------------------------
 -- Records of tb_theme
@@ -1958,7 +1958,7 @@ CREATE TABLE `tb_user`  (
   UNIQUE INDEX `username`(`username` ASC) USING BTREE,
   UNIQUE INDEX `email`(`email` ASC) USING BTREE,
   UNIQUE INDEX `phone`(`phone` ASC) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 152 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci ROW_FORMAT = DYNAMIC;
+) ENGINE = InnoDB AUTO_INCREMENT = 152 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci COMMENT = '用户表' ROW_FORMAT = DYNAMIC;
 
 -- ----------------------------
 -- Records of tb_user
@@ -1989,7 +1989,7 @@ CREATE TABLE `tb_user_favorite`  (
   CONSTRAINT `fk_user_favorite_playlist_id` FOREIGN KEY (`playlist_id`) REFERENCES `tb_playlist` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
   CONSTRAINT `fk_user_favorite_song_id` FOREIGN KEY (`song_id`) REFERENCES `tb_song` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
   CONSTRAINT `fk_user_favorite_user_id` FOREIGN KEY (`user_id`) REFERENCES `tb_user` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
-) ENGINE = InnoDB AUTO_INCREMENT = 496 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci ROW_FORMAT = DYNAMIC;
+) ENGINE = InnoDB AUTO_INCREMENT = 496 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci COMMENT = '用户喜欢表（歌曲、专辑、歌单、歌手）' ROW_FORMAT = DYNAMIC;
 
 -- ----------------------------
 -- Records of tb_user_favorite
@@ -2031,15 +2031,15 @@ INSERT INTO `tb_user_favorite` VALUES (495, 151, 1, NULL, 30, NULL, NULL, '2025-
 -- ----------------------------
 DROP TABLE IF EXISTS `tb_user_follow`;
 CREATE TABLE `tb_user_follow`  (
-  `id` bigint NOT NULL AUTO_INCREMENT,
+  `id` bigint NOT NULL AUTO_INCREMENT COMMENT 'id',
   `follower_id` bigint NOT NULL COMMENT '关注者ID',
   `followee_id` bigint NOT NULL COMMENT '被关注者ID',
-  `create_time` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `create_time` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
   PRIMARY KEY (`id`) USING BTREE,
   UNIQUE INDEX `uk_user_follow`(`follower_id` ASC, `followee_id` ASC) USING BTREE,
   INDEX `idx_followee`(`followee_id` ASC) USING BTREE,
   INDEX `idx_follower`(`follower_id` ASC) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 9 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB AUTO_INCREMENT = 9 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci COMMENT = '用户关注其他用户表' ROW_FORMAT = Dynamic;
 
 -- ----------------------------
 -- Records of tb_user_follow
@@ -2062,7 +2062,7 @@ CREATE TABLE `tb_user_recent_play`  (
   PRIMARY KEY (`id`) USING BTREE,
   INDEX `idx_user_time`(`user_id` ASC, `create_time` ASC) USING BTREE,
   INDEX `idx_user_song`(`user_id` ASC, `song_id` ASC) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 1851 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci COMMENT = '用户最近播放' ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB AUTO_INCREMENT = 1857 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci COMMENT = '用户最近播放' ROW_FORMAT = Dynamic;
 
 -- ----------------------------
 -- Records of tb_user_recent_play
@@ -2105,9 +2105,6 @@ INSERT INTO `tb_user_recent_play` VALUES (1588, 149, 594, '2025-09-24 11:16:45')
 INSERT INTO `tb_user_recent_play` VALUES (1592, 149, 595, '2025-09-24 11:18:00');
 INSERT INTO `tb_user_recent_play` VALUES (1661, 149, 596, '2025-09-24 15:01:53');
 INSERT INTO `tb_user_recent_play` VALUES (1662, 149, 597, '2025-09-24 15:02:04');
-INSERT INTO `tb_user_recent_play` VALUES (1663, 149, 598, '2025-09-24 15:02:05');
-INSERT INTO `tb_user_recent_play` VALUES (1665, 149, 599, '2025-09-24 15:02:09');
-INSERT INTO `tb_user_recent_play` VALUES (1666, 149, 600, '2025-09-24 15:02:11');
 INSERT INTO `tb_user_recent_play` VALUES (1668, 149, 601, '2025-09-24 15:02:23');
 INSERT INTO `tb_user_recent_play` VALUES (1670, 149, 692, '2025-09-24 15:04:05');
 INSERT INTO `tb_user_recent_play` VALUES (1671, 149, 693, '2025-09-24 15:04:07');
@@ -2210,26 +2207,33 @@ INSERT INTO `tb_user_recent_play` VALUES (1847, 149, 483, '2025-09-26 18:39:51')
 INSERT INTO `tb_user_recent_play` VALUES (1848, 151, 551, '2025-09-26 18:41:46');
 INSERT INTO `tb_user_recent_play` VALUES (1849, 149, 1237, '2025-09-26 18:47:36');
 INSERT INTO `tb_user_recent_play` VALUES (1850, 151, 1237, '2025-09-26 18:48:21');
+INSERT INTO `tb_user_recent_play` VALUES (1851, 149, 672, '2025-09-26 21:31:48');
+INSERT INTO `tb_user_recent_play` VALUES (1852, 149, 598, '2025-09-26 21:35:58');
+INSERT INTO `tb_user_recent_play` VALUES (1853, 149, 599, '2025-09-26 21:40:46');
+INSERT INTO `tb_user_recent_play` VALUES (1854, 149, 600, '2025-09-26 21:46:50');
+INSERT INTO `tb_user_recent_play` VALUES (1855, 149, 698, '2025-09-26 21:47:48');
+INSERT INTO `tb_user_recent_play` VALUES (1856, 149, 699, '2025-09-26 21:52:46');
 
 -- ----------------------------
 -- Table structure for tb_user_theme
 -- ----------------------------
 DROP TABLE IF EXISTS `tb_user_theme`;
 CREATE TABLE `tb_user_theme`  (
-  `user_id` bigint NOT NULL,
-  `theme_type` enum('official','custom') CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL,
-  `theme_id` bigint NULL DEFAULT NULL,
-  `image_url` varchar(512) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NULL DEFAULT NULL,
-  `blurhash` varchar(128) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NULL DEFAULT NULL,
-  `color_primary` varchar(16) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NULL DEFAULT NULL,
-  `updated_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `user_id` bigint NOT NULL COMMENT '用户id',
+  `theme_type` enum('official','custom') CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL COMMENT '资源类型（0=图片，1=视频）注：用户目前不支持视频',
+  `theme_id` bigint NULL DEFAULT NULL COMMENT '主题id',
+  `image_url` varchar(512) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NULL DEFAULT NULL COMMENT '主题图片url',
+  `blurhash` varchar(128) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NULL DEFAULT NULL COMMENT 'BlurHash 占位串（用于图片/视频封面加载前的模糊占位）',
+  `color_primary` varchar(16) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NULL DEFAULT NULL COMMENT '主颜色',
+  `updated_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '更新时间',
   PRIMARY KEY (`user_id`) USING BTREE,
   INDEX `fk_user_theme_theme`(`theme_id` ASC) USING BTREE,
   CONSTRAINT `fk_user_theme_theme` FOREIGN KEY (`theme_id`) REFERENCES `tb_theme` (`id`) ON DELETE SET NULL ON UPDATE RESTRICT
-) ENGINE = InnoDB CHARACTER SET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB CHARACTER SET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci COMMENT = '用户自定义主题表' ROW_FORMAT = Dynamic;
 
 -- ----------------------------
 -- Records of tb_user_theme
 -- ----------------------------
+INSERT INTO `tb_user_theme` VALUES (149, 'custom', NULL, 'http://192.168.100.1:9000/vibe-music-data/user-themes/7e7d39ec-8feb-42e6-b6a4-5e2111ae2870-微信图片_20250518112216_57.jpg', NULL, NULL, '2025-09-26 21:53:34');
 
 SET FOREIGN_KEY_CHECKS = 1;
