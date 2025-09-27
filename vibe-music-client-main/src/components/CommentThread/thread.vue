@@ -19,6 +19,10 @@ const content = ref('')
 const img = ref('')
 const imgRef = ref()
 
+// 图片预览相关
+const showImageDialog = ref(false)
+const previewUrl = ref('')
+
 function openReply(id: number) {
   for (const k in replyBoxOf) delete replyBoxOf[Number(k)]
   replyBoxOf[id] = true
@@ -27,9 +31,31 @@ function openReply(id: number) {
   if (imgRef.value) imgRef.value.imageUrl = ''
 }
 
+// 关闭回复框
+function closeReply(id: number) {
+  replyBoxOf[id] = false
+  content.value = ''
+  img.value = ''
+  if (imgRef.value) imgRef.value.imageUrl = ''
+}
+
+// 关闭所有回复框
+function closeAllReplies() {
+  for (const k in replyBoxOf) delete replyBoxOf[Number(k)]
+  content.value = ''
+  img.value = ''
+  if (imgRef.value) imgRef.value.imageUrl = ''
+}
+
 function handleEmoji(e: string) { content.value += e }
 function handleUpload(url: string) { img.value = url }
 function handleRemove() { img.value = ''; if (imgRef.value) imgRef.value.imageUrl = '' }
+
+// 图片预览处理
+const previewImage = (imageUrl: string) => {
+  previewUrl.value = imageUrl
+  showImageDialog.value = true
+}
 
 async function submit(replyCommentId: number) {
   await props.onReply({ content: content.value.trim(), imgPath: img.value || undefined, replyCommentId })
@@ -41,9 +67,9 @@ async function submit(replyCommentId: number) {
 </script>
 
 <template>
-  <div class="space-y-4">
+  <div class="space-y-4" @click="closeAllReplies">
     <template v-for="c in list" :key="c.commentId">
-      <div class="flex items-start gap-3">
+      <div class="flex items-start gap-3" @click.stop>
         <img :src="c.userAvatar || ''" class="w-10 h-10 rounded-full object-cover bg-muted cursor-pointer" @click="emit('profile', c.userId)" />
         <div class="flex-1 min-w-0">
           <div class="text-sm text-muted-foreground"><span class="text-blue-500 cursor-pointer" @click="emit('profile', c.userId)">{{ c.username }}</span> · {{ c.createTime }}</div>
@@ -51,7 +77,7 @@ async function submit(replyCommentId: number) {
             <template v-if="c.replyNickName">回复 <span class="text-blue-500">@{{ c.replyNickName }}</span> </template>{{ c.content || '' }}
           </p>
           <div v-if="c.imgPath" class="mt-2">
-            <img :src="c.imgPath" class="max-w-xs max-h-48 object-cover rounded-lg" />
+            <img :src="c.imgPath" class="max-w-xs max-h-48 object-cover rounded-lg cursor-pointer hover:opacity-80 transition-opacity" @click="previewImage(c.imgPath)" />
           </div>
           <div class="mt-2 text-xs text-muted-foreground flex items-center gap-4">
             <button class="hover:text-foreground" title="回复" @click="openReply(c.commentId)">回复</button>
@@ -74,17 +100,20 @@ async function submit(replyCommentId: number) {
               </template>
             </el-popconfirm>
           </div>
-          <div v-if="replyBoxOf[c.commentId]" class="mt-3">
+          <div v-if="replyBoxOf[c.commentId]" class="mt-3" @click.stop>
             <el-input v-model="content" type="textarea" :rows="3" maxlength="180" show-word-limit placeholder="回复内容" />
             <div v-if="img" class="mt-2">
-              <img :src="img" class="w-20 h-20 object-cover rounded-lg border" />
+              <img :src="img" class="w-20 h-20 object-cover rounded-lg border cursor-pointer hover:opacity-80 transition-opacity" @click="previewImage(img)" />
             </div>
             <div class="flex items-center justify-between mt-2">
               <div class="flex items-center gap-2">
                 <EmojiPicker @select="handleEmoji" />
                 <ImageUpload ref="imgRef" @upload="handleUpload" @remove="handleRemove" />
               </div>
-              <el-button type="primary" :disabled="!content.trim() && !img" @click="submit(c.commentId)">回复</el-button>
+              <div class="flex items-center gap-2">
+                <el-button @click="closeReply(c.commentId)">取消</el-button>
+                <el-button type="primary" :disabled="!content.trim() && !img" @click="submit(c.commentId)">回复</el-button>
+              </div>
             </div>
           </div>
           <div v-if="c.children && c.children.length" class="pl-6 mt-3 border-l border-gray-300/50">
@@ -94,6 +123,13 @@ async function submit(replyCommentId: number) {
       </div>
     </template>
   </div>
+
+  <!-- 图片预览对话框 -->
+  <el-dialog v-model="showImageDialog" title="图片预览" width="600px" append-to-body>
+    <div class="w-full flex justify-center items-center">
+      <img v-if="showImageDialog" :src="previewUrl" style="max-width:100%;max-height:70vh;object-fit:contain;" />
+    </div>
+  </el-dialog>
 </template>
 
 <style scoped>

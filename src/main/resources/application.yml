@@ -56,7 +56,7 @@ spring:
             port: 465
             class: javax.net.ssl.SSLSocketFactory
           # 邮件服务超时时间配置
-          connectiontimeout: 5000
+          connectiontimeout: 8000
           timeout: 3000
           writetimeout: 5000
 
