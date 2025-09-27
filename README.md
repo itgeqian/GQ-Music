@@ -317,6 +317,7 @@ pnpm run dev # 默认 http://localhost:8089
 - 支付模块
 - AI生成音乐接口
 - MV模块（利用FFmpeg）
+- 模块分层（common/admin/client）
 
 
 
@@ -324,14 +325,14 @@ pnpm run dev # 默认 http://localhost:8089
 
 ### 1.推荐页面
 
-![img](https://www.legendkiller.xyz/wp-content/uploads/2025/09/image-202-1.png)
+![img](https://www.legendkiller.xyz/wp-content/uploads/2025/09/image-202.png)
 
 - 轮播图可以跳转到管理端指定的专辑页面
 - 歌单推荐和歌曲推荐走的是不同的推荐逻辑
 
 ### 2.搜索页
 
-![img](https://www.legendkiller.xyz/wp-content/uploads/2025/09/image-203-1.png)
+![img](https://www.legendkiller.xyz/wp-content/uploads/2025/09/image-203.png)
 
 - 选择音乐时可以按照歌手/专辑/歌曲名进行搜索
 - 选择用户时按照用户名搜索
@@ -344,7 +345,7 @@ pnpm run dev # 默认 http://localhost:8089
 
 ### 3.个人详情页
 
-![img](https://www.legendkiller.xyz/wp-content/uploads/2025/09/image-205-1.png)
+![img](https://www.legendkiller.xyz/wp-content/uploads/2025/09/image-205.png)
 
 可以收起统计
 
@@ -360,7 +361,7 @@ pnpm run dev # 默认 http://localhost:8089
 
 ### 4.曲库模块（所有歌曲）
 
-![img](https://www.legendkiller.xyz/wp-content/uploads/2025/09/image-209-1.png)
+![img](https://www.legendkiller.xyz/wp-content/uploads/2025/09/image-209.png)
 
 ![img](https://www.legendkiller.xyz/wp-content/uploads/2025/09/image-210.png)
 
@@ -368,13 +369,13 @@ pnpm run dev # 默认 http://localhost:8089
 
 ### 5.歌手模块
 
-![img](https://www.legendkiller.xyz/wp-content/uploads/2025/09/image-211-1.png)
+![img](https://www.legendkiller.xyz/wp-content/uploads/2025/09/image-211.png)
 
 按分类筛选歌手，点击后可以进入歌手详情页
 
 ### 6.歌手详情页
 
-![img](https://www.legendkiller.xyz/wp-content/uploads/2025/09/image-265-1.png)
+![img](https://www.legendkiller.xyz/wp-content/uploads/2025/09/image-265.png)
 
 歌曲、专辑、详情导航
 
@@ -382,7 +383,7 @@ pnpm run dev # 默认 http://localhost:8089
 
 详情页
 
-![img](https://www.legendkiller.xyz/wp-content/uploads/2025/09/image-216-1.png)
+![img](https://www.legendkiller.xyz/wp-content/uploads/2025/09/image-216.png)
 
 专辑导航显示出所有专辑懒加载展开后显示所有歌曲，也可以点击专辑名跳转到专辑详情页
 
@@ -390,11 +391,11 @@ pnpm run dev # 默认 http://localhost:8089
 
 ### 7.专辑详情页
 
-![img](https://www.legendkiller.xyz/wp-content/uploads/2025/09/image-215-1.png)
+![img](https://www.legendkiller.xyz/wp-content/uploads/2025/09/image-215.png)
 
 专辑信息页
 
-![img](https://www.legendkiller.xyz/wp-content/uploads/2025/09/image-217-1.png)
+![img](https://www.legendkiller.xyz/wp-content/uploads/2025/09/image-217.png)
 
 专辑评论区
 
@@ -402,7 +403,7 @@ pnpm run dev # 默认 http://localhost:8089
 
 ### 8.歌单模块（官方歌单）
 
-![img](https://www.legendkiller.xyz/wp-content/uploads/2025/09/image-219-1.png)
+![img](https://www.legendkiller.xyz/wp-content/uploads/2025/09/image-219.png)
 
 点击进入歌单详情页
 
@@ -434,7 +435,7 @@ pnpm run dev # 默认 http://localhost:8089
 
 2.歌曲更多下拉框中添加到中选择
 
-![img](https://www.legendkiller.xyz/wp-content/uploads/2025/09/image-226-1.png)
+![img](https://www.legendkiller.xyz/wp-content/uploads/2025/09/image-226.png)
 
 ### 11.最近播放
 
@@ -470,7 +471,7 @@ pnpm run dev # 默认 http://localhost:8089
 
 音频条如下
 
-![img](https://www.legendkiller.xyz/wp-content/uploads/2025/09/image-238-1.png)
+![img](https://www.legendkiller.xyz/wp-content/uploads/2025/09/image-238.png)
 
 ![img](https://www.legendkiller.xyz/wp-content/uploads/2025/09/image-231.png)
 
@@ -498,7 +499,7 @@ pnpm run dev # 默认 http://localhost:8089
 
 随机播放、循环播放、顺序播放
 
-![img](https://www.legendkiller.xyz/wp-content/uploads/2025/09/image-236-1.png)
+![img](https://www.legendkiller.xyz/wp-content/uploads/2025/09/image-236.png)
 
 呼吸光效
 
@@ -506,7 +507,7 @@ pnpm run dev # 默认 http://localhost:8089
 
 评论可以上传图片和回复及删除-个人删与管理员删（歌单、专辑的评论也一样）
 
-![img](https://www.legendkiller.xyz/wp-content/uploads/2025/09/image-237-1.png)
+![img](https://www.legendkiller.xyz/wp-content/uploads/2025/09/image-237.png)
 
 ### 19.登录、注册、重置密码
 
@@ -542,7 +543,7 @@ pnpm run dev # 默认 http://localhost:8089
 
 ### 4.歌曲管理
 
-![img](https://www.legendkiller.xyz/wp-content/uploads/2025/09/image-248-1.png)
+![img](https://www.legendkiller.xyz/wp-content/uploads/2025/09/image-248.png)
 
 ![img](https://www.legendkiller.xyz/wp-content/uploads/2025/09/image-249.png)
 
@@ -566,15 +567,15 @@ pnpm run dev # 默认 http://localhost:8089
 
 ### 7.歌单管理之官方歌单
 
-![img](https://www.legendkiller.xyz/wp-content/uploads/2025/09/image-255-1.png)
+![img](https://www.legendkiller.xyz/wp-content/uploads/2025/09/image-255.png)
 
 ![img](https://www.legendkiller.xyz/wp-content/uploads/2025/09/image-256.png)
 
 添加歌曲界面跟用户端我的歌单一样
 
-![img](https://www.legendkiller.xyz/wp-content/uploads/2025/09/image-257-1.png)
+![img](https://www.legendkiller.xyz/wp-content/uploads/2025/09/image-257.png)
 
-![img](https://www.legendkiller.xyz/wp-content/uploads/2025/09/image-258-1.png)
+![img](https://www.legendkiller.xyz/wp-content/uploads/2025/09/image-258.png)
 
 ### 8.歌单管理之用户歌单
 
@@ -582,19 +583,19 @@ pnpm run dev # 默认 http://localhost:8089
 
 用户歌单只支持读和推荐
 
-![img](https://www.legendkiller.xyz/wp-content/uploads/2025/09/image-260-1.png)
+![img](https://www.legendkiller.xyz/wp-content/uploads/2025/09/image-260.png)
 
 ### 9.反馈模块
 
-![img](https://www.legendkiller.xyz/wp-content/uploads/2025/09/image-261-1.png)
+![img](https://www.legendkiller.xyz/wp-content/uploads/2025/09/image-261.png)
 
 ### 10.轮播图管理
 
-![img](https://www.legendkiller.xyz/wp-content/uploads/2025/09/image-262-1.png)
+![img](https://www.legendkiller.xyz/wp-content/uploads/2025/09/image-262.png)
 
 编辑轮播图可以选择绑定专辑
 
-![img](https://www.legendkiller.xyz/wp-content/uploads/2025/09/image-263-1.png)
+![img](https://www.legendkiller.xyz/wp-content/uploads/2025/09/image-263.png)
 
 ### 11.主题管理
 
@@ -602,7 +603,7 @@ pnpm run dev # 默认 http://localhost:8089
 
 支持上传图片格式和视频格式
 
-![img](https://www.legendkiller.xyz/wp-content/uploads/2025/09/image-264-1.png)
+![img](https://www.legendkiller.xyz/wp-content/uploads/2025/09/image-264.png)
 
    主要大的功能大概就这多，更细小我就不截图了
 
