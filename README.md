@@ -317,6 +317,7 @@ pnpm run dev # 默认 http://localhost:8089
 - 支付模块
 - AI生成音乐接口
 - MV模块（利用FFmpeg）
+- 模块分层（common/admin/client）
 
 
 
