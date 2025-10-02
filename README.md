@@ -1,6 +1,6 @@
 ### GQ Music V1.0完成
 
-一个完整的在线音乐平台二改于[Alex-LiSun/vibe-music-server: Vibe Music 服务端](https://github.com/Alex-LiSun/vibe-music-server)，包含后端服务、管理端与客户端三套应用。技术栈：Spring Boot + MySQL + Redis + MinIO + Nacos+ Vue3 + Element Plus + Vite。
+一个完整的在线音乐平台二改于，包含后端服务、管理端与客户端三套应用。技术栈：Spring Boot + MySQL + Redis + MinIO + Nacos+ Vue3 + Element Plus + Vite。
 
 - 仓库地址：[`https://github.com/itgeqian/GQ-Music.git`](https://github.com/itgeqian/GQ-Music.git)
 
