@@ -2,9 +2,12 @@
 import { getRecommendedPlaylists, getRecommendedSongs, getBanner } from '@/api/system'
 import coverImg from '@/assets/cover.png'
 import { formatTime, replaceUrlParams } from '@/utils'
-import { ElNotification } from 'element-plus'
+import { ElNotification, ElMessage } from 'element-plus'
 import { UserStore } from '@/stores/modules/user'
+import { httpGet } from '@/utils/http'
+import { getUserInfo } from '@/api/system'
 const router = useRouter()
+const route = useRoute()
 const audio = AudioStore()
 const user = UserStore()
 
@@ -79,6 +82,35 @@ onMounted(async () => {
   fetchBannerData()
   // 初始化时获取推荐数据
   getRecommendedData()
+
+  // 处理微信扫码登录回调：任意路径上若存在 ?code=xxx 则尝试换取 token
+  try {
+    const codeParam = typeof route.query.code === 'string' ? route.query.code : ''
+    if (codeParam) {
+      const res: any = await httpGet('/yungou/wx/loginByCode', { code: codeParam })
+      if (res && res.code === 0) {
+        const token = res.data?.token
+        if (token) {
+          // 先存 token，再拉取用户资料，填充头像/用户名
+          user.setUserInfo({}, token)
+          try {
+            const u = await getUserInfo()
+            if (u && u.code === 0) {
+              user.setUserInfo(u.data, token)
+            }
+          } catch {}
+          ElMessage.success('登录成功')
+          router.replace('/')
+        } else {
+          ElMessage.error('未获取到登录令牌')
+        }
+      } else {
+        ElMessage.error(res?.message || '登录失败')
+      }
+    }
+  } catch (e: any) {
+    ElMessage.error(e?.message || '登录失败')
+  }
 })
 
 const handleRefreshSongs = async () => {
@@ -170,7 +202,7 @@ const isCurrentPlaying = (songId: number) => {
               更多
             </button>
           </div>
-          <div class="grid grid-cols-4 md:grid-cols-7 gap-4 home-grid" :class="{'compact': document?.documentElement?.getAttribute('data-density')==='compact'}">
+          <div class="grid grid-cols-4 md:grid-cols-7 gap-4 home-grid" :class="{'compact': false}">
             <div
               class="rounded-2xl transition duration-300 hover:bg-hoverMenuBg bg-card text-card-foreground border-0 shadow-nonec cursor-pointer"
               v-for="i in recommendedPlaylist.slice(0, 7)" :key="i.playlistId"
@@ -203,7 +235,7 @@ const isCurrentPlaying = (songId: number) => {
           </button>
         </div>
         <el-scrollbar class="h-full" overflow-auto>
-          <div class="grid grid-cols-1 md:grid-cols-2 gap-4 gap-x-16 home-songs" :class="{'compact': document?.documentElement?.getAttribute('data-density')==='compact'}">
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4 gap-x-16 home-songs" :class="{'compact': false}">
             <button v-for="item in recommendedSongList" :key="item.id"
               class="grid grid-cols-[auto_2fr_1fr] items-center gap-4 transition duration-300 rounded-2xl w-full group"
               :class="[

@@ -76,6 +76,10 @@ const router = createRouter({
       path: '/user/search',
       component: () => import('@/pages/user/search.vue'),
     },
+    {
+      path: '/login/wx',
+      component: () => import('@/pages/index.vue'),
+    },
   ],
 })
 

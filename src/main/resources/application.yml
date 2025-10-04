@@ -72,6 +72,13 @@ mybatis-plus:
     db-config: # 数据库配置
       table-prefix: tb_  # 表名前缀为tb_，表名为前缀连接类名（小写）
 
+# YunGou 配置（建议在 Nacos 中覆盖这些值）
+yungou:
+  #这里用xxx代替，真实的数据已经放入Nacos中
+  mch-id: ${YUNGOU_MCH_ID:xxx}
+  mch-key: ${YUNGOU_MCH_KEY:xxx}
+  callback-url: ${YUNGOU_CALLBACK_URL:http://localhost:8090/}
+
 # 定义角色和路径权限的映射关系
 role-path-permissions:
   permissions:

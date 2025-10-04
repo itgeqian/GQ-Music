@@ -5,6 +5,7 @@ import type { FormInstance, FormRules } from 'element-plus'
 import { ElMessage } from 'element-plus'
 import { UserStore } from '@/stores/modules/user'
 import { getCaptcha } from '@/api/system'
+import { httpGet } from '@/utils/http'
 
 const emit = defineEmits(['success', 'switch-tab'])
 const userStore = UserStore()
@@ -96,6 +97,21 @@ function switchToReset() {
   // 通知父组件切换到重置密码标签
   emit('switch-tab', 'reset')
 }
+
+// 微信扫码登录：获取授权URL并跳转
+const handleWxScanLogin = async () => {
+  try {
+    const res: any = await httpGet('/yungou/wx/getAuthorizationUrl')
+    if (res && res.code === 0 && typeof res.data === 'string') {
+      window.location.href = res.data
+    } else {
+      ElMessage.error(res?.message || '获取授权链接失败')
+    }
+  } catch (e: any) {
+    ElMessage.error(e?.message || '获取授权链接失败')
+  }
+}
+
 onMounted(() => {
   refreshCaptcha()
   // 读取记住的邮箱
@@ -140,6 +156,12 @@ onMounted(() => {
       <el-form-item class="mt-6">
         <el-button class="submit-btn" type="primary" :loading="loading" @click="handleLogin">
           登录
+        </el-button>
+      </el-form-item>
+
+      <el-form-item>
+        <el-button class="submit-btn" type="success" @click="handleWxScanLogin">
+          微信扫码登录
         </el-button>
       </el-form-item>
     </el-form>

@@ -10,10 +10,17 @@ public class TypeConversionUtil {
      * @throws IllegalArgumentException 如果对象类型不支持转换
      */
     public static Long toLong(Object obj) {
+        if (obj == null) {
+            throw new IllegalArgumentException("转换失败，obj 为 null");
+        }
         if (obj instanceof Long) {
             return (Long) obj;
         } else if (obj instanceof Integer) {
             return ((Integer) obj).longValue();
+        } else if (obj instanceof String) {
+            String s = (String) obj;
+            if (s.isEmpty()) throw new IllegalArgumentException("转换失败，空字符串");
+            return Long.valueOf(s);
         } else {
             throw new IllegalArgumentException("转换失败，不支持类型：" + obj.getClass());
         }

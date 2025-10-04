@@ -67,7 +67,11 @@ public class LoginInterceptor implements HandlerInterceptor {
                 PathConstant.SONG_LIST_PATH,
                 PathConstant.SONG_DETAIL_PATH,
                 PathConstant.ALBUM_DETAIL_PATH,
-                "/captcha/**"
+                "/captcha/**",
+                "/yungou/wx/getAuthorizationUrl",
+                "/yungou/wx/innerQrCodeInfo",
+                "/yungou/wx/loginByCode",
+                "/yungou/wx/callback"
         );
 
         // 检查路径是否匹配

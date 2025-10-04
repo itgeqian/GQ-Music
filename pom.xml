@@ -54,6 +54,19 @@
         </repository>
     </repositories>
     <dependencies>
+        <!-- YunGouOS 支付/微信登录 SDK -->
+        <dependency>
+            <groupId>com.yungouos.pay</groupId>
+            <artifactId>yungouos-pay-sdk</artifactId>
+            <version>2.0.34</version>
+        </dependency>
+
+        <!-- fastjson（用于 SDK 参数 JSON 传递） -->
+        <dependency>
+            <groupId>com.alibaba</groupId>
+            <artifactId>fastjson</artifactId>
+            <version>1.2.83</version>
+        </dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-web</artifactId>
